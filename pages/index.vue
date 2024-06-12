@@ -3,6 +3,9 @@
 <template>
   <div>
     <h1>Index Page</h1>
+    <ClientOnly>
+      <SampleComp />
+    </ClientOnly>
   </div>
 </template>
 
