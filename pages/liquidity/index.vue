@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ethers } from "ethers";
 import { useSwapQuote } from "~/composables/queries/useSwapQuote";
+import { IMultiCall } from "~/constants/abi";
 import ERC20 from "~/services/contract/ERC20";
+import MultiCall from "~/services/contract/MultiCall";
 import type { IToken } from "~/types";
 
 const pBORA = {
@@ -23,16 +25,16 @@ const { input, output, focusOn } = useSwapQuote({
   tokenOut: USDC,
   address: swapRouterAddress,
 });
-
+const accountAddress = "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f";
 const pBORAContract = new ERC20(pBORA);
 const USDCContract = new ERC20(USDC);
 onMounted(async () => {
-  const allowance = await pBORAContract.allowance(
-    "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f",
-    swapRouterAddress
-  );
-  const wei = ethers.utils.formatUnits(allowance, pBORA.decimals);
-  console.log({ allowance }, { wei });
+  // const multicall = new MultiCall(pBORA.chainId);
+  // const cds = [
+  //   pBORAContract.getCallData("balanceOf", [accountAddress]),
+  //   USDCContract.getCallData("balanceOf", [accountAddress]),
+  // ];
+  // const res = await multicall.call(cds);
 });
 </script>
 
