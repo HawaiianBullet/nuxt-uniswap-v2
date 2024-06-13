@@ -6,7 +6,8 @@ import SwapRouter from "~/services/contract/SwapRouter";
 const input = ref("");
 const debounceInput = refDebounced(input, 700);
 const output = ref("");
-const debounceOutput = refDebounced(input, 700);
+const debounceOutput = refDebounced(output, 700);
+const focusOn = ref<"none" | "input" | "output">("none");
 const bBORA = {
   address: "0x75F57E05D3fab800DC0aFeb1856639E5963709E3",
   decimals: 18,
@@ -18,8 +19,9 @@ const USDT = {
   symbol: "USDT",
 };
 const swapRouterAddress = "0x1E030e0Af239d310DaC115B5d2fd6Ca8daA67828";
-const swapRouterContract = new SwapRouter(swapRouterAddress);
 async function getEstimateOut() {
+  const swapRouterContract = new SwapRouter(swapRouterAddress);
+  console.log("call getEstimateOut...");
   const amountOut = await swapRouterContract.getAmountsOut(
     ethers.utils.parseUnits(input.value, bBORA.decimals),
     [bBORA.address, USDT.address]
@@ -36,15 +38,41 @@ useQuery({
   queryFn: getEstimateOut,
   enabled: isEstimateOutEnabled,
 });
+
+async function getEstimateIn() {
+  const swapRouterContract = new SwapRouter(swapRouterAddress);
+  const amountOut = await swapRouterContract.getAmountsIn(
+    ethers.utils.parseUnits(input.value, USDT.decimals),
+    [bBORA.address, USDT.address]
+  );
+  const amountInETH = ethers.utils.formatUnits(amountOut, bBORA.decimals);
+  input.value = amountInETH;
+  return amountInETH;
+}
+const isEstimateInEnabled = computed(() => {
+  return Number(debounceOutput.value) > 0 && focusOn.value === "output";
+});
+useQuery({
+  queryKey: ["estimateIn", debounceOutput],
+  queryFn: getEstimateIn,
+  enabled: isEstimateInEnabled,
+});
 </script>
 
 <template>
   <div>
-    <input id="input" type="text" v-model="input" />
-
+    <input
+      id="input"
+      type="text"
+      v-model="input"
+      @focus="focusOn = 'input'"
+      @blur="focusOn = 'none'"
+    />
+    <pre>foucsOn: {{ focusOn }}</pre>
     <pre>Input: {{ input }}</pre>
     <pre>debounceInput: {{ debounceInput }}</pre>
     <pre>Output: {{ output }}</pre>
+    <pre>debounceOutput: {{ debounceOutput }}</pre>
   </div>
 </template>
 
