@@ -38,3 +38,7 @@ export const ISwapRouter = [
   // 'function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts)',
   // 'function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts)'
 ];
+
+export const IMultiCall = [
+  "function aggregate(tuple(address target, bytes callData)[] calls) public view returns (uint256 blockNumber, bytes[] returnData)",
+];

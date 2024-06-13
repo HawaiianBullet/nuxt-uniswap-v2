@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { useSwapRatio } from "~/composables/queries/useSwapRatio";
+import { useSwapQuote } from "~/composables/queries/useSwapQuote";
+import type { IToken } from "~/types";
 
 const bBORA = {
   address: "0x75F57E05D3fab800DC0aFeb1856639E5963709E3",
   decimals: 18,
   symbol: "bBORA",
   chainId: 97,
-};
+} as IToken;
 const USDT = {
   address: "0x3cC52BFD4a7c89315cd13114cD6b593F1b4efa42",
   decimals: 18,
   symbol: "USDT",
   chainId: 97,
-};
+} as IToken;
 const swapRouterAddress = "0x1E030e0Af239d310DaC115B5d2fd6Ca8daA67828";
-const { input, output, focusOn } = useSwapRatio({
+const { input, output, focusOn } = useSwapQuote({
   tokenIn: bBORA,
   tokenOut: USDT,
   address: swapRouterAddress,

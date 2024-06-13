@@ -1,12 +1,13 @@
 import { ethers, type Signer } from "ethers";
 import { ISwapRouter } from "~/constants/abi";
+import ContractBase from "./ContractBase";
 
-export default class SwapRouter {
-  protected contract: any;
+export default class SwapRouter extends ContractBase {
+  protected override contract;
 
   constructor(address: string, chainId = 97) {
-    const rpcUrl = "https://bsc-testnet-dataseed.bnbchain.org";
-    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const provider = ContractBase.getRpcProvider(chainId);
+    super(provider, address, ISwapRouter);
     this.contract = new ethers.Contract(address, ISwapRouter, provider);
   }
 

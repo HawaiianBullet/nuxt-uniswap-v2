@@ -1,0 +1,7 @@
+export const MultiCallAddress: { [key in number]: string } = {
+  99001: "0x94d0De2d5F51f4Afcc8646AadC0ceCa95d42aE77",
+  1001: "0x880B12e18A44a55C11b2086542DeBcb2b0F2C7AB",
+  80002: "0xe10018abe3b7641071d310f506119c9c6cb58d17",
+  11155111: "0xe3CaaaACd0D0CFd62E9E10d9AD24325d38EA2308",
+  97: "",
+};
