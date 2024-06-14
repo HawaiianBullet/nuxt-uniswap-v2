@@ -15,9 +15,9 @@ export const useSwapQuote = (params: {
   const debounceOutput = refDebounced(output, 700);
   const focusOn = ref<"none" | "input" | "output">("none");
   const prevFocus = ref<"none" | "input" | "output">("none");
-  const swapRouterContract = new SwapRouter(address, tokenIn.chainId);
 
   async function getEstimateOut() {
+    const swapRouterContract = new SwapRouter(address, tokenIn.chainId);
     const amountOut = await swapRouterContract.getAmountsOut(
       ethers.utils.parseUnits(input.value, tokenIn.decimals),
       [tokenIn.address, tokenOut.address]
@@ -41,6 +41,7 @@ export const useSwapQuote = (params: {
   });
 
   async function getEstimateIn() {
+    const swapRouterContract = new SwapRouter(address, tokenIn.chainId);
     const amountIn = await swapRouterContract.getAmountsIn(
       ethers.utils.parseUnits(output.value, tokenOut.decimals),
       [tokenIn.address, tokenOut.address]

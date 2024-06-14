@@ -26,16 +26,33 @@ const { input, output, focusOn } = useSwapQuote({
   address: swapRouterAddress,
 });
 const accountAddress = "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f";
-const pBORAContract = new ERC20(pBORA);
-const USDCContract = new ERC20(USDC);
-onMounted(async () => {
-  // const multicall = new MultiCall(pBORA.chainId);
-  // const cds = [
-  //   pBORAContract.getCallData("balanceOf", [accountAddress]),
-  //   USDCContract.getCallData("balanceOf", [accountAddress]),
-  // ];
-  // const res = await multicall.call(cds);
-});
+// const pBORAContract = new ERC20(pBORA);
+// const USDCContract = new ERC20(USDC);
+// async function approveToken() {
+//   const accounts = await window.ethereum.request({
+//     method: "eth_requestAccounts",
+//   });
+//   console.log({ accounts });
+//   const w3p = new ethers.providers.Web3Provider(window.ethereum);
+//   console.log({ w3p });
+//   const signer = w3p.getSigner();
+//   console.log({ signer });
+//   await pBORAContract.approve(
+//     swapRouterAddress,
+//     ethers.constants.MaxUint256,
+//     signer
+//   );
+// }
+
+// onMounted(async () => {
+//   const multicall = new MultiCall(pBORA.chainId);
+//   const cds = [
+//     pBORAContract.getCallData("allowance", [accountAddress, swapRouterAddress]),
+//     USDCContract.getCallData("allowance", [accountAddress, swapRouterAddress]),
+//   ];
+//   const res = await multicall.call(cds);
+//   console.log({ res });
+// });
 </script>
 
 <template>
