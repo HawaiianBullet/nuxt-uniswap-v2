@@ -22,4 +22,21 @@ export default class SwapRouter extends ContractBase {
     console.log("getAmountsIn", { res });
     return res[0];
   }
+
+  async swapExactTokensForTokens(
+    params: {
+      amountIn: ethers.BigNumber;
+      amountOutMin: ethers.BigNumber;
+      path: string[];
+      to: string;
+      deadline: string;
+    },
+    signer: Signer
+  ) {
+    const { amountIn, amountOutMin, path, to, deadline } = params;
+    const res = await this.contract
+      .connect(signer)
+      .swapExactTokensForTokens(amountIn, amountOutMin, path, to, deadline);
+    return res;
+  }
 }

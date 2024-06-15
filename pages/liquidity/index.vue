@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ethers } from "ethers";
 import { useSwapQuote } from "~/composables/queries/useSwapQuote";
-import { IMultiCall } from "~/constants/abi";
 import ERC20 from "~/services/contract/ERC20";
 import MultiCall from "~/services/contract/MultiCall";
+import SwapRouter from "~/services/contract/SwapRouter";
 import type { IToken } from "~/types";
 
 const pBORA = {
@@ -26,39 +26,66 @@ const { input, output, focusOn } = useSwapQuote({
   address: swapRouterAddress,
 });
 const accountAddress = "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f";
-// const pBORAContract = new ERC20(pBORA);
-// const USDCContract = new ERC20(USDC);
-// async function approveToken() {
-//   const accounts = await window.ethereum.request({
-//     method: "eth_requestAccounts",
-//   });
-//   console.log({ accounts });
-//   const w3p = new ethers.providers.Web3Provider(window.ethereum);
-//   console.log({ w3p });
-//   const signer = w3p.getSigner();
-//   console.log({ signer });
-//   await pBORAContract.approve(
-//     swapRouterAddress,
-//     ethers.constants.MaxUint256,
-//     signer
-//   );
-// }
 
-// onMounted(async () => {
-//   const multicall = new MultiCall(pBORA.chainId);
-//   const cds = [
-//     pBORAContract.getCallData("allowance", [accountAddress, swapRouterAddress]),
-//     USDCContract.getCallData("allowance", [accountAddress, swapRouterAddress]),
-//   ];
-//   const res = await multicall.call(cds);
-//   console.log({ res });
-// });
+async function approveToken() {
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  console.log({ accounts });
+  const w3p = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = w3p.getSigner();
+  const pBORAContract = new ERC20(pBORA);
+  await pBORAContract.approve(
+    swapRouterAddress,
+    ethers.utils.parseUnits(input.value, pBORA.decimals),
+    signer
+  );
+}
+
+async function swapToken() {
+  const accounts = await window.ethereum.request({
+    method: "eth_requestAccounts",
+  });
+  console.log({ accounts });
+  const w3p = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = w3p.getSigner();
+  const me = await signer.getAddress();
+  console.log({ me });
+  const swapRouterContract = new SwapRouter(swapRouterAddress, pBORA.chainId);
+  await swapRouterContract.swapExactTokensForTokens(
+    {
+      amountIn: ethers.utils.parseUnits(input.value, pBORA.decimals),
+      amountOutMin: ethers.utils.parseUnits(output.value, USDC.decimals),
+      path: [pBORA.address, USDC.address],
+      to: me,
+      deadline: (Math.floor(Date.now() / 1000) + 5000).toString(),
+    },
+    signer
+  );
+}
+
+const inputBalance = ref("");
+const outputBalance = ref("");
+onMounted(async () => {
+  const pBORAContract = new ERC20(pBORA);
+  const USDCContract = new ERC20(USDC);
+  const multicall = new MultiCall(pBORA.chainId);
+  const cds = [
+    pBORAContract.getCallData("balanceOf", [accountAddress]),
+    USDCContract.getCallData("balanceOf", [accountAddress]),
+  ];
+  const res = await multicall.call(cds);
+  console.log({ res });
+  inputBalance.value = ethers.utils.formatUnits(res[0][0], pBORA.decimals);
+  outputBalance.value = ethers.utils.formatUnits(res[1][0], USDC.decimals);
+});
 </script>
 
 <template>
   <div>
     <h1>Liquidity Page</h1>
     <p>Input: {{ pBORA.symbol }}</p>
+    <p>balance: {{ inputBalance }}</p>
     <input
       id="input"
       type="text"
@@ -67,6 +94,7 @@ const accountAddress = "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f";
       @blur="focusOn = 'none'"
     />
     <p>Output: {{ USDC.symbol }}</p>
+    <p>balance: {{ outputBalance }}</p>
     <input
       id="output"
       type="text"
@@ -77,7 +105,7 @@ const accountAddress = "0x1a7c00a4F78b3fb1194F539D8D4d3c500617fc1f";
     <div>
       <button>Approve {{ pBORA.symbol }}</button>
       <button>Approve {{ USDC.symbol }}</button>
-      <button>Add Liquidity</button>
+      <button @click="swapToken">Swap Token</button>
     </div>
   </div>
 </template>

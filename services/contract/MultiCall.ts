@@ -2,6 +2,7 @@ import { IMultiCall } from "~/constants/abi";
 import ContractBase from "./ContractBase";
 import { MultiCallAddress } from "~/constants/contract";
 import type { IContractFunction } from "~/types";
+import type { Signer } from "ethers";
 
 export default class MultiCall extends ContractBase {
   constructor(chainId: number) {
